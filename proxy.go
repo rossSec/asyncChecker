@@ -44,18 +44,19 @@ func readFile() {
 		proxies = append(proxies, scanner.Text())
 	}
 	counter := fmt.Sprintf("["+colorGreen+"+"+colorReset+"] "+"Loaded "+colorGreen+"%d"+colorReset+" proxies", lineCount)
-	fmt.Println(counter, "\n")
+	fmt.Println(counter + "\n")
 
 }
 
 func writeFile(proxy string) {
-	f, err := os.Create("checked.txt")
+	f, err := os.OpenFile("checked.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
-		fmt.Println(err)
-		return
+		panic(err)
 	}
-	f.WriteString(proxy)
-	f.Close()
+	defer f.Close()
+	if _, err = f.WriteString(proxy + "\n"); err != nil {
+		panic(err)
+	}
 }
 
 func checkProxy(proxy string) {
