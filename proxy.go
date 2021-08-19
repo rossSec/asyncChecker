@@ -20,13 +20,14 @@ var (
 )
 
 func main() {
-	fmt.Println("[" + colorGreen + "+" + colorReset + "] " + "Proxy checker by rossSec ")
+	fmt.Println("[" + colorGreen + "+" + colorReset + "] " + "Proxy Checker," + colorGreen + " https://github.com/rossSec/asyncChecker" + colorReset)
 	readFile()
+	fmt.Println("Press CTRL+C to Exit" + "\n")
+	time.Sleep(3 * time.Second)
 	for _, proxy := range proxies {
 		go checkProxy(proxy)
 	}
-	fmt.Println("Press CTRL+C to Exit" + "\n")
-	time.Sleep(5000 * time.Second)
+	time.Sleep(500000 * time.Second)
 }
 
 func readFile() {
@@ -35,13 +36,16 @@ func readFile() {
 		fmt.Println("[" + colorRed + "-" + colorReset + "] " + "Error reading proxies.txt")
 		os.Exit(0)
 	}
-	fmt.Println("[" + colorGreen + "+" + colorReset + "] " + "Reading proxies.txt" + "\n")
+	fmt.Println("[" + colorGreen + "+" + colorReset + "] " + "Reading proxies.txt")
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		lineCount++
 		proxies = append(proxies, scanner.Text())
 	}
+	counter := fmt.Sprintf("["+colorGreen+"+"+colorReset+"] "+"Loaded "+colorGreen+"%d"+colorReset+" proxies", lineCount)
+	fmt.Println(counter, "\n")
+
 }
 
 func writeFile(proxy string) {
@@ -77,11 +81,10 @@ func checkProxy(proxy string) {
 	}
 	response, err := client.Do(request)
 	if err != nil {
+		fmt.Println("[" + colorRed + "-" + colorReset + "] " + colorRed + proxy + colorReset)
 		return
 	} else {
-		active++
-		counter := fmt.Sprintf("["+colorGreen+"Checking"+colorReset+"] "+"%d"+"/"+"%d", active, lineCount)
-		fmt.Print(counter, "\r")
+		fmt.Println("[" + colorGreen + "+" + colorReset + "] " + colorGreen + proxy + colorReset)
 		writeFile(proxy)
 	}
 	defer response.Body.Close()
